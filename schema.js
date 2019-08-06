@@ -33,6 +33,10 @@ exports.typeDefs = `
     intructions:String!, username:String): Recipe
 
     signupUser(username: String!, email: String!, password:String!):Token
+
+    signInUser(username: String!, password:String!):Token
   }
+
+  
 
 `;
