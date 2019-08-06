@@ -18,6 +18,26 @@ exports.resolvers = {
     getAllRecipes: async (root, args, { Recipe }) => {
       const allRecipes = await Recipe.find();
       return allRecipes;
+    },
+
+    getRecipe: async (root, { _id }, { Recipe }) => {
+      const recipe = await Recipe.findOne({ _id });
+      return recipe;
+    },
+
+    getCurrentUser: async (root, arg, { currentUser, User }) => {
+      if (!currentUser) {
+        return null;
+      }
+
+      const user = await User.findOne({
+        username: currentUser.username
+      }).populate({
+        path: "favorites",
+        model: "Recipe"
+      });
+
+      return user;
     }
   },
 
