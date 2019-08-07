@@ -25,6 +25,14 @@ exports.resolvers = {
       return recipe;
     },
 
+    getUserRecipes: async (root, { username }, { Recipe }) => {
+      const userRecipes = await Recipe.find({ username }).sort({
+        createdDate: "desc"
+      });
+
+      return userRecipes;
+    },
+
     searchRecipes: async (root, { searchTerm }, { Recipe }) => {
       if (searchTerm) {
         const searchResults = await Recipe.find(
@@ -105,6 +113,22 @@ exports.resolvers = {
       }).save();
 
       return { token: createToken(newUser, process.env.SECRET, "1hr") };
+    },
+
+    deleteUserRecipe: async (root, { _id }, { Recipe }) => {
+      const recipe = await Recipe.findOneAndRemove({ _id });
+      const user = await User.findOneAndUpdate(
+        { username },
+        { $addToSet: { favorites: _id } }
+      );
+      return recipe;
+    },
+    likeRecipe: async (root, { _id, username }, { Recipe, User }) => {
+      const recipe = await Recipe.findOneAndUpdate(
+        { _id },
+        { $inc: { likes: 1 } }
+      );
+      return recipe;
     }
   }
 };
